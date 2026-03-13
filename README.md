@@ -15,19 +15,19 @@ Quality : of everything it produced, how much was good (not rejected)
 
 The simulated line
 5 machines modelling an electronics SMT assembly line:
-**MachineRoleIdeal Cycle TimeM01_SMTSurface Mount Technology — places components18sM02_ReflowReflow oven — solders components22sM03_AOIAutomated Optical Inspection12sM04_THTThrough-Hole Technology35sM05_ICTIn-Circuit Test28s
+**MachineRoleIdeal Cycle TimeM01_SMTSurface Mount Technology  places components18sM02_ReflowReflow oven  solders components22sM03_AOIAutomated Optical Inspection12sM04_THTThrough-Hole Technology35sM05_ICTIn-Circuit Test28s
 3 shifts per day × 7 days × 5 machines = 105 shift records total.
-Takt time is set at 20s/unit — anything slower than that is a bottleneck. M04 and M05 are consistently over takt, which is intentional.**
+Takt time is set at 20s/unit  anything slower than that is a bottleneck. M04 and M05 are consistently over takt, which is intentional.**
 How it works
 Simulation
 simulate_shift_log() generates one shift record per machine per shift. Unplanned downtime uses a triangular distribution (min=0, mode=15, max=90 minutes) — this gives you a realistic skew where most shifts have small outages and a few have big ones. Performance loss is a uniform random factor between 1.0× and 1.35× the ideal cycle time. Reject rate is random between 1% and 12%.
 All of this gets stored as a pandas DataFrame, then written to SQLite.
 Analytics
 Four separate calculations, each a pure function that takes a DataFrame and returns one:
-compute_oee() — vectorised A×P×Q per row using numpy.where for zero-safe division. Adds a world_class flag (1/0) for easy aggregation.
-rolling_oee() — groups by machine, sorts chronologically by date+shift, applies a 3-shift rolling mean per machine. Shows whether a machine's performance is trending up or down rather than just the current snapshot.
-pareto_downtime() — groups by downtime cause, sums minutes, sorts descending, adds cumulative % column. Classic Pareto — the top 2-3 causes usually account for 70-80% of total downtime.
-takt_vs_actual() — compares each machine's average actual cycle time against takt time. Flags bottlenecks and calculates the gap in seconds.
+compute_oee()  vectorised A×P×Q per row using numpy.where for zero-safe division. Adds a world_class flag (1/0) for easy aggregation.
+rolling_oee()  groups by machine, sorts chronologically by date+shift, applies a 3-shift rolling mean per machine. Shows whether a machine's performance is trending up or down rather than just the current snapshot.
+pareto_downtime() groups by downtime cause, sums minutes, sorts descending, adds cumulative % column. Classic Pareto — the top 2-3 causes usually account for 70-80% of total downtime.
+takt_vs_actual()  compares each machine's average actual cycle time against takt time. Flags bottlenecks and calculates the gap in seconds.
 Dashboard
 Five charts on one page:
 
