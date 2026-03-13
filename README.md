@@ -14,11 +14,10 @@ Quality : of everything it produced, how much was good (not rejected)
 85% is considered world-class. Most real lines sit between 40–60%. The dashboard RAG-codes each machine against the 85% threshold.
 
 The simulated line
-**5 machines modelling an electronics SMT assembly line:
+5 machines modelling an electronics SMT assembly line:
 **MachineRoleIdeal Cycle TimeM01_SMTSurface Mount Technology — places components18sM02_ReflowReflow oven — solders components22sM03_AOIAutomated Optical Inspection12sM04_THTThrough-Hole Technology35sM05_ICTIn-Circuit Test28s
 3 shifts per day × 7 days × 5 machines = 105 shift records total.
 Takt time is set at 20s/unit — anything slower than that is a bottleneck. M04 and M05 are consistently over takt, which is intentional.**
-**
 How it works
 Simulation
 simulate_shift_log() generates one shift record per machine per shift. Unplanned downtime uses a triangular distribution (min=0, mode=15, max=90 minutes) — this gives you a realistic skew where most shifts have small outages and a few have big ones. Performance loss is a uniform random factor between 1.0× and 1.35× the ideal cycle time. Reject rate is random between 1% and 12%.
